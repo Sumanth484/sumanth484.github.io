@@ -1,9 +1,16 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { useState } from "react";
+import { motion } from "framer-motion";
+
+const FORMSPREE_URL = "https://formspree.io/f/xjkvvwyl";
 
 const ContactForm = () => {
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
-  const [status, setStatus] = useState({ type: '', message: '' });
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+  const [status, setStatus] = useState({ type: "", message: "" });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -11,24 +18,41 @@ const ContactForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setStatus({ type: 'info', message: 'Sending...' });
+    setLoading(true);
+    setStatus({ type: "", message: "" });
 
-    // TODO: Replace with your EmailJS credentials (service ID, template ID, public key)
-    // Uncomment below after setting up EmailJS at emailjs.com
-    /*
+    const form = new FormData();
+    form.append("name", formData.name);
+    form.append("email", formData.email);
+    form.append("message", formData.message);
+
     try {
-      await emailjs.sendForm('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', e.target, 'YOUR_PUBLIC_KEY');
-      setStatus({ type: 'success', message: 'Message sent successfully!' });
-      setFormData({ name: '', email: '', message: '' });
-    } catch (error) {
-      setStatus({ type: 'error', message: 'Failed to send message. Please try again.' });
-    }
-    */
+      const response = await fetch(FORMSPREE_URL, {
+        method: "POST",
+        body: form,
+        headers: { Accept: "application/json" },
+      });
 
-    // Temporary: log form data until EmailJS is configured
-    console.log('Form submitted:', formData);
-    setStatus({ type: 'success', message: 'Message sent successfully! (EmailJS not configured yet)' });
-    setFormData({ name: '', email: '', message: '' });
+      if (response.ok) {
+        setStatus({
+          type: "success",
+          message: "Message sent successfully! I'll get back to you soon.",
+        });
+        setFormData({ name: "", email: "", message: "" });
+      } else {
+        setStatus({
+          type: "error",
+          message: "Failed to send message. Please try again.",
+        });
+      }
+    } catch {
+      setStatus({
+        type: "error",
+        message: "Something went wrong. Please try again later.",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -41,7 +65,10 @@ const ContactForm = () => {
       className="space-y-6"
     >
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label
+          htmlFor="name"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+        >
           Name
         </label>
         <input
@@ -55,7 +82,10 @@ const ContactForm = () => {
         />
       </div>
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label
+          htmlFor="email"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+        >
           Email
         </label>
         <input
@@ -69,7 +99,10 @@ const ContactForm = () => {
         />
       </div>
       <div>
-        <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label
+          htmlFor="message"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+        >
           Message
         </label>
         <textarea
@@ -83,15 +116,18 @@ const ContactForm = () => {
         ></textarea>
       </div>
       {status.message && (
-        <div className={`p-3 rounded-lg ${status.type === 'success' ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300' : status.type === 'error' ? 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300' : 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'}`}>
+        <div
+          className={`p-3 rounded-lg ${status.type === "success" ? "bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300" : "bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300"}`}
+        >
           {status.message}
         </div>
       )}
       <button
         type="submit"
-        className="w-full px-6 py-3 bg-primary-600 text-white rounded-full hover:bg-primary-700 transition-colors"
+        disabled={loading}
+        className="w-full px-6 py-3 bg-primary-600 text-white rounded-full hover:bg-primary-700 transition-colors disabled:opacity-50"
       >
-        Send Message
+        {loading ? "Sending..." : "Send Message"}
       </button>
     </motion.form>
   );

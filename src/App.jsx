@@ -1,4 +1,5 @@
 import { ThemeProvider } from './context/ThemeContext';
+import { PortfolioProvider } from './data/portfolioData';
 import Navbar from './components/Navbar';
 import Hero from './sections/Hero';
 import About from './sections/About';
@@ -13,20 +14,22 @@ import ScrollToTop from './components/ScrollToTop';
 function App() {
   return (
     <ThemeProvider>
-      <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors">
-        <Navbar />
-        <main>
-          <Hero />
-          <About />
-          <Experience />
-          <Education />
-          <Projects />
-          <Skills />
-          <Contact />
-        </main>
-        <Footer />
-        <ScrollToTop />
-      </div>
+      <PortfolioProvider>
+        <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors">
+          <Navbar />
+          <main>
+            <Hero />
+            <About />
+            <Experience />
+            <Education />
+            <Projects />
+            <Skills />
+            <Contact />
+          </main>
+          <Footer />
+          <ScrollToTop />
+        </div>
+      </PortfolioProvider>
     </ThemeProvider>
   );
 }

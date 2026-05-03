@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# build output
+dist/
+
+# optional
+node_modules/
